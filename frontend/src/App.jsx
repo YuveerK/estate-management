@@ -1,11 +1,8 @@
 import { useState } from "react";
+import Navigation from "./navigation/Navigation";
 
 function App() {
-  return (
-    <div>
-      <h1 class="text"> hello world</h1>
-    </div>
-  );
+  return <Navigation />;
 }
 
 export default App;
