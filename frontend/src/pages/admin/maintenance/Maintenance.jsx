@@ -1,51 +1,90 @@
-import React, { useState } from "react";
-import { GoArrowUpRight } from "react-icons/go";
+import React, { useEffect, useRef, useState } from "react";
 import AdminMaintenanceRequestsTablePage from "../../../components/AdminMaintenanceRequestsTablePage";
+import PageHeader from "../../../components/PageHeader";
+import TabSelector from "../../../components/inputs/TabSelector";
+import CreateRequestButton from "../../../components/CreateRequestButton";
+import SearchInput from "../../../components/inputs/SearchInput";
+import ColumnVisibilityDropdown from "../../../components/ColumnVisibilityDropdown";
+import CreateMaintenanceModal from "../../../components/CreateMaintenanceModal";
 
 const tabs = ["All Requests", "New", "In Progress", "Completed"];
+const allColumns = [
+  "Title",
+  "Unit",
+  "Resident",
+  "Date",
+  "Priority",
+  "Status",
+  "AssignedTo",
+  "Actions",
+];
 
 const Maintenance = () => {
   const [activeTab, setActiveTab] = useState("All Requests");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterMenu, setFilterMenu] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(allColumns);
+  const [showModal, setShowModal] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setFilterMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [visibleColumns]);
+
+  const toggleColumn = (col) => {
+    if (visibleColumns.includes(col)) {
+      setVisibleColumns(visibleColumns.filter((c) => c !== col));
+    } else {
+      setVisibleColumns([...visibleColumns, col]);
+    }
+  };
 
   return (
-    <div className="w-full h-screen p-8 bg-white rounded-md shadow-sm overflow-auto">
+    <div className="w-full h-screen p-8 bg-white rounded-md shadow-sm overflow-auto relative">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-2xl text-gray-800">All Requests</h1>
-          <p className="text-sm text-gray-500">
-            View and manage all maintenance requests from residents
-          </p>
-        </div>
-        <div>
-          <div className="flex items-center gap-1 border border-gray-300 px-4 py-2 rounded-md hover:bg-[#f2f5fa] hover:cursor-pointer transition-all">
-            <p className="mr-2 font-medium text-sm text-gray-700">
-              Create Request
-            </p>
-            <GoArrowUpRight size={16} className="text-gray-600" />
-          </div>
-        </div>
+        <PageHeader
+          title="All Requests"
+          subtitle="View and manage all maintenance requests from residents"
+        />
+        <CreateRequestButton onClick={() => setShowModal(true)} />
+        <CreateMaintenanceModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+        />
       </div>
 
-      <div className="mt-8 flex items-center space-x-4">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 cursor-pointer py-2 rounded-xl shadow-sm transition-all duration-200 font-medium text-sm 
-              ${
-                activeTab === tab
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }
-            `}
-          >
-            {tab}
-          </button>
-        ))}
+      <TabSelector
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+
+      <div className="w-full flex items-center justify-between mt-8">
+        <SearchInput value={searchQuery} onChange={setSearchQuery} />
+        <div className="relative" ref={dropdownRef}>
+          <ColumnVisibilityDropdown
+            isOpen={filterMenu}
+            toggleMenu={() => setFilterMenu((prev) => !prev)}
+            visibleColumns={visibleColumns}
+            toggleColumn={toggleColumn}
+            allColumns={allColumns}
+          />
+        </div>
       </div>
 
       <div className="mt-6">
-        <AdminMaintenanceRequestsTablePage filter={activeTab} />
+        <AdminMaintenanceRequestsTablePage
+          filter={activeTab}
+          visibleColumns={visibleColumns}
+          searchQuery={searchQuery}
+        />
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ const AdminMaintenanceRequestsTablePage = () => {
             <th className="p-2">Title</th>
             <th className="p-2">Unit</th>
             <th className="p-2">Resident</th>
+            <th className="p-2">Date</th>
+            <th className="p-2">Priority</th>
             <th className="p-2">Status</th>
             <th className="p-2">Assigned To</th>
             <th className="p-2"></th>
@@ -19,6 +21,12 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
@@ -35,6 +43,12 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
@@ -51,6 +65,12 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
@@ -67,6 +87,12 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
@@ -83,6 +109,12 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
@@ -99,6 +131,56 @@ const AdminMaintenanceRequestsTablePage = () => {
             <td className="p-2">Leaking faucet in bathroom </td>
             <td className="p-2">101 </td>
             <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
+                <p className="text-green-800 text-sm font-medium">New</p>
+              </div>
+            </td>
+            <td className="p-2">Mike Technician </td>
+            <td className="p-2 flex justify-end">
+              <div className=" w-fit flex items-center border border-gray-300 px-4 py-2 rounded-md hover:bg-[#f2f5fa] hover:cursor-pointer">
+                <p className="mr-2">View</p>
+              </div>
+            </td>
+          </tr>
+          <tr className="border-b border-b-gray-300">
+            <td className="p-2">Leaking faucet in bathroom </td>
+            <td className="p-2">101 </td>
+            <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
+                <p className="text-green-800 text-sm font-medium">New</p>
+              </div>
+            </td>
+            <td className="p-2">Mike Technician </td>
+            <td className="p-2 flex justify-end">
+              <div className=" w-fit flex items-center border border-gray-300 px-4 py-2 rounded-md hover:bg-[#f2f5fa] hover:cursor-pointer">
+                <p className="mr-2">View</p>
+              </div>
+            </td>
+          </tr>
+          <tr className="border-b border-b-gray-300">
+            <td className="p-2">Leaking faucet in bathroom </td>
+            <td className="p-2">101 </td>
+            <td className="p-2">John Smith </td>
+            <td className="p-2">28-03-2025</td>
+            <td className="p-2">
+              <div className="w-fit px-4 py-[4px] rounded-full bg-red-200 text-center">
+                <p className="text-red-800 text-sm font-medium">High</p>
+              </div>
+            </td>
             <td className="p-2">
               <div className="w-fit px-4 py-[4px] rounded-full bg-green-200 text-center">
                 <p className="text-green-800 text-sm font-medium">New</p>
