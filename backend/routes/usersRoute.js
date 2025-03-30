@@ -2,64 +2,58 @@ const router = require("express").Router();
 const pool = require("../db/db.config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-// Store your secret safely in .env for production
-const SECRET = "super-secret-key"; // Use process.env.JWT_SECRET in production
-const verifyToken = require("../middleware/verifyToken");
-// Test route
-router.get("/", async (req, res) => {
-  try {
-    res.status(200).json("works!");
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
+const upload = require("../middleware/upload");
+const SECRET = "super-secret-key";
 
-router.get("/me", verifyToken, (req, res) => {
-  res.json({ message: "Authenticated", user: req.user });
-});
+// 🟡 Modified route with profile image upload
+router.post(
+  "/create-user",
+  upload.single("profile_picture"),
+  async (req, res) => {
+    try {
+      const { name, surname, email, role, password } = req.body;
+      const profile_picture = req.file ? req.file.filename : null;
 
-router.post("/create-user", async (req, res) => {
-  try {
-    const { name, surname, email, role, password } = req.body;
-
-    if (!name || !surname || !email || !role || !password) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const query = `
-        INSERT INTO users (name, surname, email, role, password, createdAt, updatedAt)
-        VALUES (?, ?, ?, ?, ?, NOW(), NOW())
-      `;
-
-    pool.query(
-      query,
-      [name, surname, email, role, hashedPassword],
-      (err, result) => {
-        if (err) return res.status(500).json({ error: err });
-
-        const token = jwt.sign(
-          {
-            userId: result.insertId,
-            name,
-            email,
-            role,
-          },
-          SECRET,
-          { expiresIn: "2h" }
-        );
-
-        res.status(201).json({
-          message: "User created successfully",
-          token,
-        });
+      if (!name || !surname || !email || !role || !password) {
+        return res.status(400).json({ error: "All fields are required." });
       }
-    );
-  } catch (error) {
-    res.status(500).json({ error: "Unexpected error occurred" });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const query = `
+      INSERT INTO users (name, surname, email, role, password, profile_picture, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+    `;
+
+      pool.query(
+        query,
+        [name, surname, email, role, hashedPassword, profile_picture],
+        (err, result) => {
+          if (err) return res.status(500).json({ error: err });
+
+          const token = jwt.sign(
+            {
+              userId: result.insertId,
+              name,
+              email,
+              role,
+            },
+            SECRET,
+            { expiresIn: "2h" }
+          );
+
+          res.status(201).json({
+            message: "User created successfully",
+            token,
+            profile_picture,
+          });
+        }
+      );
+    } catch (error) {
+      res.status(500).json({ error: "Unexpected error occurred" });
+    }
   }
-});
+);
 
 // ✅ Login Route
 router.post("/login", async (req, res) => {
@@ -104,6 +98,7 @@ router.post("/login", async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            profile_picture: user.profile_picture,
           },
         });
       }

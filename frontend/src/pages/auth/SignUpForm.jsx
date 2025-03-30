@@ -12,6 +12,8 @@ const SignUpForm = () => {
     role: "",
   });
 
+  const [profileImage, setProfileImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,21 +22,34 @@ const SignUpForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
-    console.log("first");
     e.preventDefault();
     setLoading(true);
 
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+    if (profileImage) {
+      data.append("profile_picture", profileImage);
+    }
+
     try {
-      const res = await axios.post(
-        "http://localhost:4001/create-user",
-        formData
-      );
+      const res = await axios.post("http://localhost:4001/create-user", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      // Save token
       localStorage.setItem("token", res.data.token);
-
       toast.success("Account created successfully!");
+      navigate("/");
     } catch (err) {
       console.error(err);
       toast.error("An error occurred");
@@ -49,13 +64,52 @@ const SignUpForm = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-200"
       >
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
           Create Account
         </h2>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-gray-500 mb-6 text-center">
           Join the platform and manage your estate effortlessly.
         </p>
 
+        {/* Profile Picture Upload */}
+        <div className="flex justify-center mb-6">
+          <label className="relative group cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            <div className="w-28 h-28 rounded-full ring-2 ring-blue-500 shadow-md overflow-hidden relative group-hover:brightness-90 transition-all">
+              <img
+                src={
+                  previewUrl ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                alt="Profile Preview"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 10l4.553-4.553a1.5 1.5 0 00-2.121-2.121L13 7.879l-1.379-1.379a1.5 1.5 0 00-2.121 2.121L10.879 10 7 13.879a1.5 1.5 0 002.121 2.121L13 12.121l4.553 4.553a1.5 1.5 0 002.121-2.121L15 10z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        {/* Form Inputs */}
         {["name", "surname", "email", "password"].map((field) => (
           <div key={field} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -6,18 +6,31 @@ import { CiLogout } from "react-icons/ci";
 import useUserStore from "../stores/userStore";
 const AdminSidebar = () => {
   const links = [
-    { name: "Dashboard", path: "/home", icon: <FaHome /> },
-    { name: "Maintenance", path: "/maintenance", icon: <FaGear /> },
+    { name: "Dashboard", path: "/admin/home", icon: <FaHome /> },
+    { name: "Maintenance", path: "/admin/maintenance", icon: <FaGear /> },
   ];
   const clearUser = useUserStore((state) => state.clearUser);
+  const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
   const handleLogout = () => {
     clearUser(); // clear user from global state
     navigate("/"); // redirect to login page
   };
+
+  console.log(user);
   return (
     <aside className="w-64 h-full bg-[#121729] text-white p-4 border-r">
-      <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
+      <div className="w-full flex items-center justify-center">
+        <img
+          src={`http://localhost:4001/user-profile-pictures/${user.profile_picture}`}
+          alt=""
+          className="w-[100px] h-[100px] rounded-full"
+          style={{ objectFit: "cover" }}
+        />
+      </div>
+      <h2 className="text-xl font-bold mb-6 text-center mt-4">
+        Welcome, {user.name}
+      </h2>
       <div className="w-full bg-gray-50 h-[0.5px] mb-4"></div>
       <nav className="flex flex-col space-y-2">
         {links.map((link) => (
@@ -36,12 +49,8 @@ const AdminSidebar = () => {
             </div>
           </NavLink>
         ))}
-        <div
-          className={({ isActive }) =>
-            `p-2 rounded hover:bg-[#202839] ${
-              isActive ? "bg-[#202839] font-semibold" : ""
-            }`
-          }
+        <NavLink
+          className="p-2 rounded hover:bg-[#202839]"
           onClick={() => handleLogout()}
         >
           <div className="flex items-center">
@@ -50,7 +59,7 @@ const AdminSidebar = () => {
             </div>
             <div>Logout</div>
           </div>
-        </div>
+        </NavLink>
       </nav>
     </aside>
   );
