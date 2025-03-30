@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import useUserStore from "../../stores/userStore";
+import { URL } from "../../constants/env.const";
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -20,10 +21,16 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:4001/login", formData);
+      const res = await axios.post(`${URL}/login`, formData);
+      const user = res.data.user;
+
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+
+      const redirected = await getUserDetailsOrRedirect(user); // 🔁 returns true if redirected
+
+      if (redirected) return; // ⛔ skip navigating to /admin/home
 
       toast.success("Login successful");
       navigate("/admin/home");
@@ -32,6 +39,34 @@ const LoginForm = () => {
       toast.error(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔁 Helper function now RETURNS a boolean
+  const getUserDetailsOrRedirect = async (user) => {
+    const userId = user.userId;
+    const role = user.role.toLowerCase();
+
+    if (role !== "owner" && role !== "tenant") {
+      return false; // admin or manager
+    }
+
+    try {
+      const res = await axios.get(`${URL}/get-resident/${userId}`);
+      const resident = res.data;
+      console.log(resident);
+      if (!resident.accountCreated) {
+        navigate("/users/create-account");
+        return true; // redirect to wizard
+      }
+
+      return false; // continue to /admin/home
+    } catch (err) {
+      if (err.response?.status === 404) {
+        navigate("/users/create-account");
+        return true;
+      }
+      throw err;
     }
   };
 

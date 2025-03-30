@@ -4,6 +4,8 @@ const path = require("path"); // ⬅️ Required for serving absolute paths
 
 const app = express();
 const usersRoute = require("./routes/usersRoute");
+const residentsRoute = require("./routes/residentsRoute");
+const vehiclesRoute = require("./routes/vehiclesRoute");
 
 app.use(cors());
 app.use(express.json());
@@ -15,6 +17,8 @@ app.use(
 );
 
 app.use(usersRoute);
+app.use(residentsRoute);
+app.use(vehiclesRoute);
 
 const port = 4001;
 app.listen(port, () => {

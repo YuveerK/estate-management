@@ -6,6 +6,8 @@ import Maintenance from "../pages/admin/maintenance/Maintenance";
 import SignUpForm from "../pages/auth/SignUpForm";
 import LoginForm from "../pages/auth/LoginForm";
 import ProtectedRoute from "./ProtectedRoute";
+import CreateAccount from "../pages/usersPortal/CreateAccount";
+import Users from "../pages/admin/users/Users";
 
 const Navigation = () => (
   <Routes>
@@ -16,8 +18,10 @@ const Navigation = () => (
         <Route index element={<Navigate to="home" />} />
         <Route path="home" element={<Home />} />
         <Route path="maintenance" element={<Maintenance />} />
+        <Route path="users" element={<Users />} />
       </Route>
     </Route>
+    <Route path="/users/create-account" element={<CreateAccount />} />
   </Routes>
 );
 

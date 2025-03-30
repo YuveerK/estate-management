@@ -46,6 +46,12 @@ router.post(
             message: "User created successfully",
             token,
             profile_picture,
+            user: {
+              userId: result.insertId,
+              name,
+              email,
+              role,
+            },
           });
         }
       );

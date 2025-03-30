@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-
+import { URL } from "../../constants/env.const";
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -39,11 +39,22 @@ const SignUpForm = () => {
       data.append(key, value);
     });
     if (profileImage) {
-      data.append("profile_picture", profileImage);
+      data.append("profile_picture", profileImage); // ✅ ensure backend expects this name
+    }
+    if (
+      !formData.name ||
+      !formData.surname ||
+      !formData.email ||
+      !formData.password ||
+      !formData.role
+    ) {
+      toast.error("Please fill in all required fields.");
+      setLoading(false);
+      return;
     }
 
     try {
-      const res = await axios.post("http://localhost:4001/create-user", data, {
+      const res = await axios.post(`${URL}/create-user`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -51,8 +62,12 @@ const SignUpForm = () => {
       toast.success("Account created successfully!");
       navigate("/");
     } catch (err) {
-      console.error(err);
-      toast.error("An error occurred");
+      console.error("Signup error:", err);
+      if (err.response?.data?.error) {
+        toast.error(err.response.data.error);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -138,20 +153,46 @@ const SignUpForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select role</option>
-            <option value="Admin">Admin</option>
-            <option value="Manager">Manager</option>
-            <option value="Resident">Resident</option>
+            <option value="admin">Admin</option>
+            <option value="owner">Owner</option>
+            <option value="tenant">Tenant</option>
           </select>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className={`w-full ${
+          className={`w-full flex justify-center items-center gap-2 ${
             loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
           } text-white text-sm font-medium py-2.5 rounded-lg shadow transition duration-200`}
         >
-          {loading ? "Creating Account..." : "Sign Up"}
+          {loading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
+              </svg>
+              Creating Account...
+            </>
+          ) : (
+            "Sign Up"
+          )}
         </button>
 
         <p className="text-sm text-center text-gray-600 mt-4">

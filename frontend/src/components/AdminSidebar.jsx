@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { CiLogout } from "react-icons/ci";
 import useUserStore from "../stores/userStore";
@@ -8,6 +8,7 @@ const AdminSidebar = () => {
   const links = [
     { name: "Dashboard", path: "/admin/home", icon: <FaHome /> },
     { name: "Maintenance", path: "/admin/maintenance", icon: <FaGear /> },
+    { name: "Users", path: "/admin/users", icon: <FaUsers /> },
   ];
   const clearUser = useUserStore((state) => state.clearUser);
   const user = useUserStore((state) => state.user);
