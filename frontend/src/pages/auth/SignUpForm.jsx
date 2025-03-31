@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { URL } from "../../constants/env.const";
+import { URL as API_URL } from "../../constants/env.const";
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -54,7 +54,7 @@ const SignUpForm = () => {
     }
 
     try {
-      const res = await axios.post(`${URL}/create-user`, data, {
+      const res = await axios.post(`${API_URL}/create-user`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

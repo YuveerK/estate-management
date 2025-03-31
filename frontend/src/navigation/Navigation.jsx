@@ -8,6 +8,7 @@ import LoginForm from "../pages/auth/LoginForm";
 import ProtectedRoute from "./ProtectedRoute";
 import CreateAccount from "../pages/usersPortal/CreateAccount";
 import Users from "../pages/admin/users/Users";
+import AdminProfilePage from "../pages/admin/profile/AdminProfilePage";
 
 const Navigation = () => (
   <Routes>
@@ -19,6 +20,7 @@ const Navigation = () => (
         <Route path="home" element={<Home />} />
         <Route path="maintenance" element={<Maintenance />} />
         <Route path="users" element={<Users />} />
+        <Route path="admin-profile" element={<AdminProfilePage />} />
       </Route>
     </Route>
     <Route path="/users/create-account" element={<CreateAccount />} />

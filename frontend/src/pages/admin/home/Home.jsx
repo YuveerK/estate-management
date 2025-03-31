@@ -1,14 +1,13 @@
 import React from "react";
-import AdminStatCard from "../../../components/AdminStatCard";
 import { TiSpanner } from "react-icons/ti";
 import { FaArrowDown } from "react-icons/fa6";
 import { FaRegBuilding, FaArrowUp } from "react-icons/fa";
 import { CiCreditCard1 } from "react-icons/ci";
-import AdminMaintenanceRequestsTable from "../../../components/AdminMaintenanceRequestsTable";
-import AdminCommunityPosts from "../../../components/AdminCommunityPosts";
-import AdminMaintenanceRequestChart from "../../../components/AdminMaintenanceRequestChart";
-import AdminUsersOwnersChart from "../../../components/AdminUsersOwnersChart";
-
+import AdminStatCard from "../../../components/admin/home/AdminStatCard.jsx";
+import AdminMaintenanceRequestsTable from "../../../components/admin/home/AdminMaintenanceRequestsTable.jsx";
+import AdminCommunityPosts from "../../../components/admin/home/AdminCommunityPosts.jsx";
+import AdminMaintenanceRequestChart from "../../../components/admin/home/AdminMaintenanceRequestChart.jsx";
+import AdminUsersOwnersChart from "../../../components/admin/home/AdminUsersOwnersChart.jsx";
 const Home = () => {
   return (
     <div className="p-8 w-full h-screen overflow-auto bg-[#fbfdfe]">

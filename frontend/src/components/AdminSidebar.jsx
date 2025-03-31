@@ -4,11 +4,16 @@ import { FaHome, FaUsers } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { CiLogout } from "react-icons/ci";
 import useUserStore from "../stores/userStore";
+import { URL } from "../constants/env.const";
+import defaultAvatar from "../assets/no-avatar.png";
+import { CgProfile } from "react-icons/cg";
+
 const AdminSidebar = () => {
   const links = [
     { name: "Dashboard", path: "/admin/home", icon: <FaHome /> },
     { name: "Maintenance", path: "/admin/maintenance", icon: <FaGear /> },
     { name: "Users", path: "/admin/users", icon: <FaUsers /> },
+    { name: "Profile", path: "/admin/admin-profile", icon: <CgProfile /> },
   ];
   const clearUser = useUserStore((state) => state.clearUser);
   const user = useUserStore((state) => state.user);
@@ -22,12 +27,21 @@ const AdminSidebar = () => {
   return (
     <aside className="w-64 h-full bg-[#121729] text-white p-4 border-r">
       <div className="w-full flex items-center justify-center">
-        <img
-          src={`http://localhost:4001/user-profile-pictures/${user.profile_picture}`}
-          alt=""
-          className="w-[100px] h-[100px] rounded-full"
-          style={{ objectFit: "cover" }}
-        />
+        {user.profile_picture ? (
+          <img
+            src={`${URL}/user-profile-pictures/${user.profile_picture}`}
+            alt=""
+            className="w-[100px] h-[100px] rounded-full"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <img
+            src={defaultAvatar}
+            alt=""
+            className="w-[100px] h-[100px] rounded-full"
+            style={{ objectFit: "cover" }}
+          />
+        )}
       </div>
       <h2 className="text-xl font-bold mb-6 text-center mt-4">
         Welcome, {user.name}

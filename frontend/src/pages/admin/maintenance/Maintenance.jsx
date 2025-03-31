@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import AdminMaintenanceRequestsTablePage from "../../../components/AdminMaintenanceRequestsTablePage";
+import AdminMaintenanceRequestsTablePage from "../../../components/admin/maintenance/AdminMaintenanceRequestsTablePage";
 import PageHeader from "../../../components/PageHeader";
 import TabSelector from "../../../components/inputs/TabSelector";
 import CreateRequestButton from "../../../components/CreateRequestButton";
 import SearchInput from "../../../components/inputs/SearchInput";
 import ColumnVisibilityDropdown from "../../../components/ColumnVisibilityDropdown";
-import CreateMaintenanceModal from "../../../components/CreateMaintenanceModal";
+import CreateMaintenanceModal from "../../../components/admin/maintenance/CreateMaintenanceModal";
 
 const tabs = ["All Requests", "New", "In Progress", "Completed"];
 const allColumns = [
@@ -25,8 +25,14 @@ const Maintenance = () => {
   const [filterMenu, setFilterMenu] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(allColumns);
   const [showModal, setShowModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // 👈 trigger refresh
 
   const dropdownRef = useRef(null);
+
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,7 +42,7 @@ const Maintenance = () => {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [visibleColumns]);
+  }, []);
 
   const toggleColumn = (col) => {
     if (visibleColumns.includes(col)) {
@@ -53,10 +59,18 @@ const Maintenance = () => {
           title="All Requests"
           subtitle="View and manage all maintenance requests from residents"
         />
-        <CreateRequestButton onClick={() => setShowModal(true)} />
+        <CreateRequestButton
+          onClick={() => {
+            setSelectedRequest(null);
+            setShowModal(true);
+          }}
+          title={"Create Request"}
+        />
         <CreateMaintenanceModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
+          existingRequest={selectedRequest}
+          onSuccess={handleRefresh} // ✅ trigger refresh after success
         />
       </div>
 
@@ -84,6 +98,11 @@ const Maintenance = () => {
           filter={activeTab}
           visibleColumns={visibleColumns}
           searchQuery={searchQuery}
+          onView={(req) => {
+            setSelectedRequest(req);
+            setShowModal(true);
+          }}
+          refreshKey={refreshKey} // ✅ triggers re-fetch
         />
       </div>
     </div>

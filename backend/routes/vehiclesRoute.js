@@ -30,7 +30,7 @@ router.post("/create-vehicle", (req, res) => {
 });
 
 // ✅ Get all vehicles
-router.get("/", (req, res) => {
+router.get("/get-all-vehicles", (req, res) => {
   const query = `
     SELECT v.*, u.name, u.surname, u.email
     FROM vehicles v
@@ -44,7 +44,7 @@ router.get("/", (req, res) => {
 });
 
 // ✅ Get vehicle by ID
-router.get("/:vehicleId", (req, res) => {
+router.get("/get-vehicle/:vehicleId", (req, res) => {
   const { vehicleId } = req.params;
 
   pool.query(
@@ -65,7 +65,7 @@ router.get("/:vehicleId", (req, res) => {
 });
 
 // ✅ Update vehicle
-router.put("/:vehicleId", (req, res) => {
+router.put("/update-vehicle/:vehicleId", (req, res) => {
   const { vehicleId } = req.params;
   const { plateNumber, make, model, color } = req.body;
 
@@ -82,7 +82,7 @@ router.put("/:vehicleId", (req, res) => {
 });
 
 // ✅ Delete vehicle
-router.delete("/:vehicleId", (req, res) => {
+router.delete("/delete-vehicle/:vehicleId", (req, res) => {
   const { vehicleId } = req.params;
 
   pool.query("DELETE FROM vehicles WHERE vehicleId = ?", [vehicleId], (err) => {

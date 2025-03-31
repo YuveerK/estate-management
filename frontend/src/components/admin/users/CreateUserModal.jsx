@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { URL } from "../constants/env.const";
-const CreateUserModal = ({ isOpen, onClose }) => {
+import { URL } from "../../../constants/env.const";
+
+const CreateUserModal = ({ isOpen, onClose, existingUser = null }) => {
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -23,6 +24,35 @@ const CreateUserModal = ({ isOpen, onClose }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (isOpen) {
+      if (existingUser) {
+        setFormData({
+          ...existingUser,
+          password: "", // leave blank
+          profile_picture: null, // image not shown
+        });
+      } else {
+        setFormData({
+          name: "",
+          surname: "",
+          email: "",
+          password: "",
+          role: "owner",
+          idNumber: "",
+          phoneNumber: "",
+          emergencyContact: "",
+          numberOfOccupants: "",
+          pets: "No",
+          plateNumber: "",
+          make: "",
+          model: "",
+          color: "",
+          profile_picture: null,
+        });
+      }
+    }
+  }, [isOpen, existingUser]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -38,53 +68,80 @@ const CreateUserModal = ({ isOpen, onClose }) => {
     setLoading(true);
 
     try {
-      // Step 1: Create user with image
-      const userForm = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (
-          key !== "plateNumber" &&
-          key !== "make" &&
-          key !== "model" &&
-          key !== "color" &&
-          key !== "idNumber" &&
-          key !== "phoneNumber" &&
-          key !== "emergencyContact" &&
-          key !== "numberOfOccupants" &&
-          key !== "pets"
-        ) {
-          userForm.append(key, value);
-        }
-      });
-
-      const userRes = await axios.post(`${URL}/create-user`, userForm);
-      const userId = userRes.data.user.userId; // userId from the response
-
-      // Step 2: Create resident using the userId from the user creation response
-      await axios.post(`${URL}/create-resident`, {
-        userId,
-        idNumber: formData.idNumber,
-        phoneNumber: formData.phoneNumber,
-        emergencyContact: formData.emergencyContact,
-        numberOfOccupants: formData.numberOfOccupants,
-        pets: formData.pets,
-      });
-
-      // Step 3: Create vehicle (if filled)
-      if (formData.plateNumber.trim() !== "") {
-        await axios.post(`${URL}/create-vehicle`, {
-          userId,
-          plateNumber: formData.plateNumber,
-          make: formData.make,
-          model: formData.model,
-          color: formData.color,
+      if (existingUser) {
+        await axios.put(`${URL}/update-resident/${existingUser.residentId}`, {
+          idNumber: formData.idNumber,
+          phoneNumber: formData.phoneNumber,
+          emergencyContact: formData.emergencyContact,
+          numberOfOccupants: formData.numberOfOccupants,
+          pets: formData.pets,
+          accountCreated: true,
         });
+
+        await axios.put(`${URL}/update-user/${existingUser.userId}`, {
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          role: formData.role,
+        });
+
+        if (formData.plateNumber && existingUser.vehicleId) {
+          await axios.put(`${URL}/update-vehicle/${existingUser.vehicleId}`, {
+            plateNumber: formData.plateNumber,
+            make: formData.make,
+            model: formData.model,
+            color: formData.color,
+          });
+        }
+
+        toast.success("User updated successfully");
+      } else {
+        const userForm = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+          if (
+            key !== "plateNumber" &&
+            key !== "make" &&
+            key !== "model" &&
+            key !== "color" &&
+            key !== "idNumber" &&
+            key !== "phoneNumber" &&
+            key !== "emergencyContact" &&
+            key !== "numberOfOccupants" &&
+            key !== "pets"
+          ) {
+            userForm.append(key, value);
+          }
+        });
+
+        const userRes = await axios.post(`${URL}/create-user`, userForm);
+        const userId = userRes.data.user.userId;
+
+        await axios.post(`${URL}/create-resident`, {
+          userId,
+          idNumber: formData.idNumber,
+          phoneNumber: formData.phoneNumber,
+          emergencyContact: formData.emergencyContact,
+          numberOfOccupants: formData.numberOfOccupants,
+          pets: formData.pets,
+        });
+
+        if (formData.plateNumber.trim() !== "") {
+          await axios.post(`${URL}/create-vehicle`, {
+            userId,
+            plateNumber: formData.plateNumber,
+            make: formData.make,
+            model: formData.model,
+            color: formData.color,
+          });
+        }
+
+        toast.success("User created successfully");
       }
 
-      toast.success("User created successfully");
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create user");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -102,16 +159,19 @@ const CreateUserModal = ({ isOpen, onClose }) => {
           <X />
         </button>
 
-        <h2 className="text-xl font-semibold mb-1">Create User</h2>
+        <h2 className="text-xl font-semibold mb-1">
+          {existingUser ? "Update User" : "Create User"}
+        </h2>
         <p className="text-sm text-gray-500 mb-6">
-          Create a new resident with vehicle and profile details.
+          {existingUser
+            ? "Edit resident and vehicle details."
+            : "Create a new resident with vehicle and profile details."}
         </p>
 
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-2 gap-4 text-sm"
         >
-          {/* BASIC INFO */}
           <Input
             label="Name"
             name="name"
@@ -133,14 +193,16 @@ const CreateUserModal = ({ isOpen, onClose }) => {
             onChange={handleChange}
             required
           />
-          <Input
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          {!existingUser && (
+            <Input
+              label="Password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          )}
           <Select
             label="Role"
             name="role"
@@ -149,13 +211,11 @@ const CreateUserModal = ({ isOpen, onClose }) => {
             options={["owner", "tenant"]}
           />
 
-          {/* PROFILE IMAGE */}
           <div className="col-span-2">
             <label className="font-medium block">Profile Picture</label>
             <input type="file" name="profile_picture" onChange={handleChange} />
           </div>
 
-          {/* RESIDENT INFO */}
           <Input
             label="ID Number"
             name="idNumber"
@@ -188,7 +248,6 @@ const CreateUserModal = ({ isOpen, onClose }) => {
             options={["Yes", "No"]}
           />
 
-          {/* VEHICLE INFO */}
           <Input
             label="Plate Number"
             name="plateNumber"
@@ -230,7 +289,13 @@ const CreateUserModal = ({ isOpen, onClose }) => {
               loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {loading ? "Creating..." : "Create User"}
+            {loading
+              ? existingUser
+                ? "Updating..."
+                : "Creating..."
+              : existingUser
+              ? "Update User"
+              : "Create User"}
           </button>
         </div>
       </div>

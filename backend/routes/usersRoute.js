@@ -99,13 +99,7 @@ router.post("/login", async (req, res) => {
         res.status(200).json({
           message: "Login successful",
           token,
-          user: {
-            userId: user.userId,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            profile_picture: user.profile_picture,
-          },
+          user,
         });
       }
     );
@@ -114,5 +108,55 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Unexpected error" });
   }
 });
+
+router.put(
+  "/update-user/:userId",
+  upload.single("profile_picture"),
+  async (req, res) => {
+    const { userId } = req.params;
+    const { name, surname, email, role, password } = req.body;
+    const profile_picture = req.file ? req.file.filename : null;
+
+    try {
+      if (!name || !surname || !email || !role) {
+        return res.status(400).json({ error: "All fields are required." });
+      }
+
+      // 🔒 Optional: Hash new password if provided
+      let updatePassword = "";
+      const params = [name, surname, email, role];
+      let query = `
+        UPDATE users 
+        SET name = ?, surname = ?, email = ?, role = ?
+      `;
+
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        query += `, password = ?`;
+        params.push(hashedPassword);
+      }
+
+      if (profile_picture) {
+        query += `, profile_picture = ?`;
+        params.push(profile_picture);
+      }
+
+      query += `, updatedAt = NOW() WHERE userId = ?`;
+      params.push(userId);
+
+      pool.query(query, params, (err, result) => {
+        if (err) return res.status(500).json({ error: err });
+
+        return res.json({
+          message: "User updated successfully",
+          profile_picture, // 👈 Return the new image filename
+        });
+      });
+    } catch (error) {
+      console.error("Update error:", error);
+      return res.status(500).json({ error: "Unexpected server error" });
+    }
+  }
+);
 
 module.exports = router;

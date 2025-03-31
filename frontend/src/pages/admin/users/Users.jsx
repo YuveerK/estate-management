@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import AdminMaintenanceRequestsTablePage from "../../../components/AdminMaintenanceRequestsTablePage";
 import PageHeader from "../../../components/PageHeader";
 import TabSelector from "../../../components/inputs/TabSelector";
 import CreateRequestButton from "../../../components/CreateRequestButton";
 import SearchInput from "../../../components/inputs/SearchInput";
 import ColumnVisibilityDropdown from "../../../components/ColumnVisibilityDropdown";
-import CreateUserModal from "../../../components/CreateUserModal";
+import CreateUserModal from "../../../components/admin//users/CreateUserModal";
+import AdminUsersTablePage from "../../../components/admin/users/AdminUsersTablePage";
 
 const tabs = ["All Requests", "New", "In Progress", "Completed"];
 const allColumns = [
@@ -25,6 +25,7 @@ const Users = () => {
   const [filterMenu, setFilterMenu] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(allColumns);
   const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); // 👈 add this
 
   const dropdownRef = useRef(null);
 
@@ -51,12 +52,17 @@ const Users = () => {
       <div className="flex items-center justify-between">
         <PageHeader title="All Users" subtitle="View and manage users" />
         <CreateRequestButton
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setSelectedUser(null); // ✅ Reset selected user
+            setShowModal(true); // ✅ Open modal in create mode
+          }}
           title={"Create User"}
         />
+
         <CreateUserModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
+          existingUser={selectedUser} // 👈 pass this in
         />
       </div>
 
@@ -80,10 +86,14 @@ const Users = () => {
       </div>
 
       <div className="mt-6">
-        <AdminMaintenanceRequestsTablePage
+        <AdminUsersTablePage
           filter={activeTab}
           visibleColumns={visibleColumns}
           searchQuery={searchQuery}
+          onViewUser={(user) => {
+            setSelectedUser(user); // ✅ sets user to populate the modal
+            setShowModal(true); // ✅ opens the modal
+          }}
         />
       </div>
     </div>

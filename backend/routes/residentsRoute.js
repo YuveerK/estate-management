@@ -45,9 +45,28 @@ router.post("/create-resident", (req, res) => {
 router.get("/get-all-residents", (req, res) => {
   pool.query(
     `
-    SELECT r.*, u.name, u.surname, u.email, u.role
-    FROM residents r
-    JOIN users u ON r.userId = u.userId
+        SELECT u.userId, 
+        u.name, 
+        u.surname, 
+        u.email, 
+        u.role, 
+        u.profile_picture, 
+        r.idNumber, 
+        r.phoneNumber, 
+        r.emergencyContact, 
+        r.numberOfOccupants, 
+        r.pets, 
+        r.accountCreated,
+        v.vehicleId, 
+        v.plateNumber, 
+        v.make, 
+        v.model, 
+        v.color
+        FROM residents r
+        JOIN users u ON r.userId = u.userId
+        LEFT JOIN vehicles v ON v.userId = r.userId
+        WHERE u.role != 'admin'
+
     `,
     (err, results) => {
       if (err) return res.status(500).json({ error: err });
@@ -79,7 +98,7 @@ router.get("/get-resident/:userId", (req, res) => {
 });
 
 // ✅ Update resident
-router.put("/:residentId", (req, res) => {
+router.put("/update-resident/:residentId", (req, res) => {
   const { residentId } = req.params;
   const {
     idNumber,
